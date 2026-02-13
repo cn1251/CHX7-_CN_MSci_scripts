@@ -1,29 +1,37 @@
 #!/bin/bash
 # Cassandra Noorman 2026
 
-if [[ "$(echo $(gnuplot --version) | grep -o "command not found" | wc -l)" -eq 1 ]]; 
-  then echo "Could not find GNUplot. Try running apt install gnuplot or pacman -S gnuplot" && exit
-  else echo "gnuplot.bash: found $(gnuplot --version) ... Continuing script"
-fi 
+v_gnuplot () {
+  if [[ "$(echo $(gnuplot --version) | grep -o "command not found" | wc -l)" -eq 1 ]]; 
+    then echo "Could not find GNUplot. Try running apt install gnuplot or pacman -S gnuplot" && exit
+    else echo "gnuplot.bash: found $(gnuplot --version)"
+  fi 
+}
 
-# Paths (include trailing /)
-data_path="$HOME/Project/Data/"
-# data_path sub paths
-pa_gpa_path="Analysis_CHX7-/CHX7-_PA_GPA.txt"
-unsat_path="Analysis_CHX7/CHX7_freq/"
-ani_path="Analysis_CHX7-/CHX7-_freq/"
-
-# freq.out grep search terms
-grep_H="Total Enthalpy"
-grep_G="Final Gibbs free energy"
-grep_T="Temperature"
-grep_P="Pressure"
-
-# Read the map into an array
-readarray -t pa_gpa_map < $data_path$pa_gpa_path
-anis=()
-unsats=()
-PAs=()
+sh_init () {
+  # Paths (include trailing /)
+  data_path="$HOME/Project/Data/"
+  # data_path sub paths
+  pa_gpa_path="Analysis_CHX7-/CHX7-_PA_GPA.txt"
+  unsat_path="Analysis_CHX7/CHX7_freq/"
+  ani_path="Analysis_CHX7-/CHX7-_freq/"
+  # freq.out grep search terms
+  #grep_H="Total Enthalpy"
+  #grep_G="Final Gibbs free energy"
+  #grep_T="Temperature"
+  #grep_P="Pressure"
+  readarray -t pa_gpa_map < $data_path$pa_gpa_path # Read the map into an array
+  anis=()
+  unsats=()
+  PAs=()
+  # Arrays
+  ethane_GPAs=()
+  propane_GPAs=()
+  butane_GPAs=()
+  pentane_GPAs=()
+  hexane_GPAs=()
+  heptane_GPAs=()
+}
 
 freq_grep () {
   local i=$(grep "$1" "$data_path$2$3freq.out" 2>/dev/null)
@@ -32,13 +40,6 @@ freq_grep () {
   if [[ $4 -ne 1 ]]; then i=$(echo "$i*2625" | bc 2>/dev/null); fi # Convert Eh to kJ mol^-1
   echo "$i"
 }
-
-ethane_GPAs=()
-propane_GPAs=()
-butane_GPAs=()
-pentane_GPAs=()
-hexane_GPAs=()
-heptane_GPAs=()
 
 Cx_array () {
   case $carbons in
@@ -124,5 +125,29 @@ GPA_Cx_makedata () {
   echo "makedata done!"
 }
 
-#GPA_Cx_makedata
+sh_info () {
+  echo "====== pa_gpa_gnuplot.bash ... Proton Affinities and Gas Phase Acidities: GNUplot utility ... Cassandra Noorman 2026 (MIT Licence) ======"
+  echo "=== For use with Orca freq.out files for C and H containing anionic structures up to C7. You will need to edit this script before use ==="
+}
 
+usage () {
+  sh_info
+  echo "Usage:"
+  echo "  -h     ...  Show this message"
+  echo "  -v     ...  Show script info"
+  echo "  -g     ...  Display GNUplot version"
+  echo "  -u     ...  Energy units <kcal/kJ>"
+  echo "  -m     ...  Make data for GPA vs Cx plot"
+  echo "  -p     ...  Plot data for GPA vs Cx plot"
+}
+
+while getopts "ghvu:mp" opt; do 
+  case $opt in 
+    g) v_gnuplot && exit ;; 
+    h) usage && exit ;; 
+    v) sh_info && exit ;; 
+    u) echo "Units unfinished. Remove this flag and kJ will be used." && exit ;; 
+    m) sh_init && GPA_Cx_makedata ;; 
+    p) v_gnuplot && sh_init && echo "plotting unfinished" ;; 
+  esac 
+done
