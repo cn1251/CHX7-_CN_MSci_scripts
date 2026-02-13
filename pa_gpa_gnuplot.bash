@@ -126,8 +126,10 @@ GPA_Cx_makedata () {
 }
 
 sh_info () {
-  echo "====== pa_gpa_gnuplot.bash ... Proton Affinities and Gas Phase Acidities: GNUplot utility ... Cassandra Noorman 2026 (MIT Licence) ======"
-  echo "=== For use with Orca freq.out files for C and H containing anionic structures up to C7. You will need to edit this script before use ==="
+  echo "=== pa_gpa_gnuplot.bash ... Proton Affinities and Gas Phase Acidities: GNUplot utility ==="
+  echo "=== Cassandra Noorman 2026 (MIT Licence) University of Nottingham, School of Chemistry ==="
+  echo "== For use with Orca freq.out files for C and H containing anionic structures up to C7. ==" 
+  echo "==================== You will need to edit this script before use. ======================="
 }
 
 usage () {
