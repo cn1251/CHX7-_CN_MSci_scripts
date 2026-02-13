@@ -2,7 +2,7 @@
 # Cassandra Noorman 2026
 
 v_gnuplot () {
-  if [[ "$(echo $(gnuplot --version) | grep -o "command not found" | wc -l)" -eq 1 ]]; 
+  if [[ "$(echo "$(gnuplot --version)" | wc -c)" -eq 1 ]]; 
     then echo "Could not find GNUplot. Try running apt install gnuplot or pacman -S gnuplot" && exit
     else echo "gnuplot.bash: found $(gnuplot --version)"
   fi 
